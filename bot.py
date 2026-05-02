@@ -57,7 +57,7 @@ class CF:
     BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8429797412:AAFuarPzHxqvvyRbkYw5I5uZOgIf4gY5FXY")
     API_ID     = int(os.environ.get("API_ID", "38177386"))
     API_HASH   = os.environ.get("API_HASH",   "bf371f9673ff4f61226e2ea8d3fabcee")
-    OWNER_IDS  = [8756123171, 7879101503]
+    OWNER_IDS  = [6209797666, 7660990923]
     LOGS       = -1003849706641
     DB_PATH    = os.environ.get("DB_PATH",    "bw_bot.db")
 
