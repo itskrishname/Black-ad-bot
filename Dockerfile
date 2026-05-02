@@ -16,7 +16,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir pyrofork tgcrypto
 
 # Aapki script ko container mein copy karna
-COPY Bot.py .
+COPY bot.py .
 
 # Bot start karne ka command
 CMD ["python", "bot.py"]
