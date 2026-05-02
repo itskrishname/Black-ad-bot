@@ -54,7 +54,7 @@ log = logging.getLogger("BlackWolf")
 # ══════════════════════════════════════════════════════════════════
 
 class CF:
-    BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8740942836:AAHm2V9OInYXj4F632E-9n-t6-CpuAg7_eM")
+    BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8429797412:AAFuarPzHxqvvyRbkYw5I5uZOgIf4gY5FXY")
     API_ID     = int(os.environ.get("API_ID", "38177386"))
     API_HASH   = os.environ.get("API_HASH",   "bf371f9673ff4f61226e2ea8d3fabcee")
     OWNER_IDS  = [8756123171, 7879101503]
