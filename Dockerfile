@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir pyrofork tgcrypto
 COPY Bot.py .
 
 # Bot start karne ka command
-CMD ["python", "Bot.py"]
+CMD ["python", "bot.py"]
