@@ -53,22 +53,7 @@ log = logging.getLogger("BlackWolf")
 # 2. CONFIG
 # ══════════════════════════════════════════════════════════════════
 
-class CF:
-    BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8740942836:AAHm2V9OInYXj4F632E-9n-t6-CpuAg7_eM")
-    API_ID     = int(os.environ.get("API_ID", "38177386"))
-    API_HASH   = os.environ.get("API_HASH",   "bf371f9673ff4f61226e2ea8d3fabcee")
-    OWNER_IDS  = [6209797666]
-    LOGS       = -1003849706641
-    DB_PATH    = os.environ.get("DB_PATH",    "bw_bot.db")
-
-    JOIN_PATTERN = [(5, 30*60)]  # (joins, wait_seconds) repeating — 30 min fixed gap
-    JOIN_DELAY   = (8, 18)
-    MSG_DELAY    = (3, 8)
-    FLOOD_EXTRA  = (60, 120)
-
-    @classmethod
-    def is_owner(cls, uid: int) -> bool:
-        return uid in cls.OWNER_IDS
+from config import CF
 
 
 # ══════════════════════════════════════════════════════════════════
