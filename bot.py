@@ -54,14 +54,14 @@ log = logging.getLogger("BlackWolf")
 # ══════════════════════════════════════════════════════════════════
 
 class CF:
-    BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8429797412:AAFuarPzHxqvvyRbkYw5I5uZOgIf4gY5FXY")
+    BOT_TOKEN  = os.environ.get("BOT_TOKEN",  "8740942836:AAHm2V9OInYXj4F632E-9n-t6-CpuAg7_eM")
     API_ID     = int(os.environ.get("API_ID", "38177386"))
     API_HASH   = os.environ.get("API_HASH",   "bf371f9673ff4f61226e2ea8d3fabcee")
-    OWNER_IDS  = [6209797666, 7660990923]
+    OWNER_IDS  = [6209797666]
     LOGS       = -1003849706641
     DB_PATH    = os.environ.get("DB_PATH",    "bw_bot.db")
 
-    JOIN_PATTERN = [(5, 5*60), (5, 20*60)]  # (joins, wait_seconds) repeating
+    JOIN_PATTERN = [(5, 30*60)]  # (joins, wait_seconds) repeating — 30 min fixed gap
     JOIN_DELAY   = (8, 18)
     MSG_DELAY    = (3, 8)
     FLOOD_EXTRA  = (60, 120)
@@ -638,6 +638,7 @@ class JoinEngine:
             "started": datetime.now().strftime("%H:%M:%S"),
             "failures": [],
             "_joined_ids": set(),
+            "_dead_links": set(),  # links confirmed expired/invalid — skip for all accounts
         }
 
         t = asyncio.create_task(self._run(cat_id, owner_id, accs, groups_plain))
@@ -660,8 +661,7 @@ class JoinEngine:
             f"🌐 Groups   : <code>{len(groups)}</code>\n"
             f"🔄 Force-sub channels: <code>{len(fsubs)}</code>\n\n"
             f"<b>Rate limit per account (auto):</b>\n"
-            f"  5 joins → 5 min wait\n"
-            f"  5 joins → 20 min wait\n"
+            f"  5 joins → 30 min wait\n"
             f"  (repeats — fully automatic)\n\n"
             f"All accounts run in parallel. Updates after each batch."
         )
@@ -749,6 +749,14 @@ class JoinEngine:
         for row in groups:
             gid  = row["id"]
             link = row["link"]
+
+            # Skip globally dead links (expired/invalid — confirmed by another account)
+            if link in self._stats[cat_id].get("_dead_links", set()):
+                log.info(f"[Join] {phone}: skipping dead link {link}")
+                self._stats[cat_id]["failed"] += 1
+                self._stats[cat_id]["failures"].append(
+                    {"link": link, "reason": "Invite link expired or revoked (skipped)"})
+                continue
 
             # Rate-limit batch check
             batch_size, wait_secs = CF.JOIN_PATTERN[pattern_idx % len(CF.JOIN_PATTERN)]
@@ -843,6 +851,14 @@ class JoinEngine:
             except Exception as e:
                 es     = str(e).upper()
                 reason = _friendly_error(e, phone)
+
+                # ── Expired/invalid invite link → mark dead globally ──
+                if any(k in es for k in INVITE_ERRORS):
+                    self._stats[cat_id]["_dead_links"].add(link)
+                    self._stats[cat_id]["failed"] += 1
+                    self._stats[cat_id]["failures"].append({"link": link, "reason": reason})
+                    log.info(f"[Join] {phone}: marking dead link {link}")
+                    continue
 
                 # ── Dead account → stop this worker ──────────────
                 if any(k in es for k in DEAD_ERRORS):
